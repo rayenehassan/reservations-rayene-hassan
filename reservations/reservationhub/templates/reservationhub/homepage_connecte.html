@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Accueil - SNCF Connect</title>
+</head>
+<body>
+    <a href="{% url 'reservationhub:accueil' %}" style="position: absolute; top: 10px; right: 10px;">Se déconnecter</a>
+
+    <h1 style="text-align: center;">SNCF Connect</h1>
+
+    <h2>Trajets disponibles :</h2>
+    <ul>
+        {% for trajet in trajets %}
+            <li>
+                <a href="{% url 'reservationhub:edit_reservation' trajet.id %}">{{ trajet }} - Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }} - Arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</a>
+            </li>
+        {% empty %}
+            <li>Aucun trajet disponible.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Gares :</h2>
+    <ul>
+        {% for gare in gares %}
+            <li>{{ gare }}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'reservationhub:trajets' %}" style="display: block; width: 200px; margin: 20px auto; text-align: center; background-color: #007bff; color: #fff; padding: 10px; border-radius: 5px; text-decoration: none;">Prendre un train</a>
+    <a href="{% url 'reservationhub:mes_reservations' %}" style="display: block; width: 200px; margin: 20px auto; text-align: center; background-color: #007bff; color: #fff; padding: 10px; border-radius: 5px; text-decoration: none;">Mes réservations</a>
+</body>
+</html>

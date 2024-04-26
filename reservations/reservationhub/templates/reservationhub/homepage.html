@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Accueil - SNCF Connect</title>
+</head>
+<body>
+    <a href="{% url 'login' %}" style="position: absolute; top: 10px; right: 10px;">Se connecter</a>
+    <h1>Liste des trajets disponibles</h1>
+    <ul>
+        {% for trajet in trajets %}
+            <li>
+                {{ trajet }} - Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }} - Arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}
+            </li>
+        {% empty %}
+            <li>Aucun trajet disponible.</li>
+        {% endfor %}
+    </ul>
+    
+    <h2>Gares :</h2>
+    <ul>
+        {% for gare in gares %}
+            <li>{{ gare }}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'login' %}" style="display: block; width: 200px; margin: 20px auto; text-align: center; background-color: #007bff; color: #fff; padding: 10px; border-radius: 5px; text-decoration: none;">Prendre un train</a>
+</body>
+</html>

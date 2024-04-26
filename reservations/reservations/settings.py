@@ -123,7 +123,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/reservationhub/trajets/'  
+LOGIN_REDIRECT_URL = '/reservationhub/accueil_connecte/'  
 LOGOUT_REDIRECT_URL = '/accounts/login/' 
 
 

@@ -1,0 +1,10 @@
+<form method="post" action="{% url 'login' %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" style="display: inline-block; background-color: #007bff; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; text-decoration: none; cursor: pointer;">Se connecter</button>
+  <input type="hidden" name="next" value="{{ next }}">
+  <a href="{% url 'reservationhub:register' %}" style="display: inline-block; background-color: #007bff; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; text-decoration: none; cursor: pointer;">S'enregistrer</a>
+</form>
+
+
+  

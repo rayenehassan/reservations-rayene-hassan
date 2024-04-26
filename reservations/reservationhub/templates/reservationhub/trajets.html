@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des trajets</title>
+</head>
+<body>
+    <a href="{% url 'reservationhub:accueil' %}" style="position: absolute; top: 10px; right: 10px;">Se déconnecter</a>
+    <h1>Liste des trajets disponibles</h1>
+    <ul>
+        {% for trajet in trajets %}
+            <li>
+                <a href="{% url 'reservationhub:edit_reservation' trajet.id %}">{{ trajet }} - Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }} - Arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</a>
+            </li>
+        {% empty %}
+            <li>Aucun trajet disponible.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Filtrer les trajets par gare :</h2>
+    <form method="GET" action="">
+        <label for="gare_depart">Gare de départ :</label>
+        <select name="gare_depart" id="gare_depart">
+            <option value="">Toutes les gares</option>
+            {% for gare in gares %}
+                <option value="{{ gare.id }}">{{ gare.nom }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="gare_arrivee">Gare d'arrivée :</label>
+        <select name="gare_arrivee" id="gare_arrivee">
+            <option value="">Toutes les gares</option>
+            {% for gare in gares %}
+                <option value="{{ gare.id }}">{{ gare.nom }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Filtrer</button>
+    </form>
+    
+    <a href="{% url 'reservationhub:mes_reservations' %}" class="reservations-button" style="margin-top: 20px; display: inline-block;">Mes réservations</a>
+    <br><br>
+    <a href="{% url 'reservationhub:accueil_connecte' %}" class="reservations-button" style="margin-top: 20px; display: inline-block;">Revenir à la page d'accueil</a>
+
+</body>
+</html>
+

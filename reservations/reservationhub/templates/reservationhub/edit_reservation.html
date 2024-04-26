@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Édition de réservation</title>
+</head>
+<body>
+    <h1>Réserver</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <a href="{% url 'reservationhub:creer_passager' %}" class="btn btn-primary">Créer un passager</a>
+        <br><br>
+        <input type="hidden" name="trajet_id" value="{{ trajet.id }}">
+        <input type="hidden" name="utilisateur" value="{{ request.user.client.id }}">
+        <button type="submit">Réserver</button>
+        <a href="{% url 'reservationhub:trajets' %}" class="btn btn-secondary">Ne pas réserver</a>
+    </form>
+</body>
+</html>
