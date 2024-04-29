@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 {%extends 'reservationhub/base.html'%}
 <html lang="fr">
-{%block title%}
+{%block title %}
+Liste des trajets
+{%endblock%}
+{%block content%}
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des trajets</title>
-{%endblock%}
-{%block content%}
+
+</head>
     <a href="{% url 'reservationhub:accueil' %}" style="position: absolute; top: 10px; right: 10px;">Se déconnecter</a>
     <h1>Liste des trajets disponibles</h1>
     <ul>
