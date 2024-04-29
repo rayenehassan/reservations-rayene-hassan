@@ -125,6 +125,12 @@ def homepage_connecte(request):
     else:
         return render(request, 'reservationhub/homepage_connecte.html', {})
 
+def admin_dashboard(request):
+    if request.user.is_superuser:
+        reservations = Reservation.objects.all()
+        return render(request, 'reservationhub/admin_dashboard.html', {'reservations': reservations})
+    else:
+        return render(request, 'reservationhub/admin_dashboard.html', {})
 
 
 
