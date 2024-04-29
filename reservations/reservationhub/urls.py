@@ -15,5 +15,6 @@ urlpatterns =[
     path('register/', register, name='register'),
     path('accueil/', views.homepage, name='accueil'),
     path('accueil_connecte/', views.homepage_connecte, name='accueil_connecte'),
+    path('', views.homepage, name='accueil'),
 ]
 
