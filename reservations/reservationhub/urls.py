@@ -15,6 +15,7 @@ urlpatterns =[
     path('register/', register, name='register'),
     path('accueil/', views.homepage, name='accueil'),
     path('accueil_connecte/', views.homepage_connecte, name='accueil_connecte'),
+    path('dashboard/<int:trajet_id>/', views.admin_trajets_data, name='admin_trajets_data'),
     path('', views.homepage, name='accueil'),
 ]
 

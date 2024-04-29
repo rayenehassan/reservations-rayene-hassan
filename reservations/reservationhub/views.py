@@ -125,12 +125,17 @@ def homepage_connecte(request):
     else:
         return render(request, 'reservationhub/homepage_connecte.html', {})
 
-def admin_dashboard(request):
-    if request.user.is_superuser:
-        reservations = Reservation.objects.all()
-        return render(request, 'reservationhub/admin_dashboard.html', {'reservations': reservations})
-    else:
-        return render(request, 'reservationhub/admin_dashboard.html', {})
+def admin_trajets_data(request,numero_trajet):
+    # if request.user.is_superuser:
+        trajet = Trajet.objects.get(id=numero_trajet)
+        reservations = Reservation.objects.filter(trajet=trajet)
+        
+        dates = reservations.values_list('date_reservation', flat=True).distinct()
+        nombre_reservations = [reservations.filter(date_reservation=date).count() for date in dates]
+         
+        return render(request, 'reservationhub/admin_trajet_data.html', {'dates': dates, 'nombre_reservations': nombre_reservations, 'trajet': trajet})
+    # else:
+        # return render(request, 'reservationhub/admin_dashboard.html', {})
 
 
 
