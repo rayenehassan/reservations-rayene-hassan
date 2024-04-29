@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {%extends 'reservationhub/base.html'%}
 <html lang="fr">
+{%block content%}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,8 +12,9 @@
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Créer</button>
-        <a href="{% url 'reservationhub:trajets' %}" class="btn btn-secondary">Ne pas créer</a>
+        <button type="submit" class="btn btn-success">Créer</button>
+        <a href="{% url 'reservationhub:trajets' %}" class="btn btn-primary">Annuler</a>
     </form>
 </body>
+{%endblock%}
 </html>
