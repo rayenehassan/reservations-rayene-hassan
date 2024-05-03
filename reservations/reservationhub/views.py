@@ -155,8 +155,8 @@ def get_charts_trajet(request,numero_trajet):
     # else:
         # return render(request, 'reservationhub/admin_dashboard.html', {})
 
-def trajets_chart_view(request):
-    return render(request, "admin_trajet_data.html", {})
+def trajets_chart_view(request, numero_trajet):
+    return render(request, "reservationhub/admin_trajet_data.html", {'numero_trajet': numero_trajet})
 
 
 

@@ -19,6 +19,7 @@ urlpatterns =[
     path('', views.homepage, name='accueil'),
     
     # URLS vers les différents charts possibles
+    path('dashboard/suivi_reservations/<int:numero_trajet>/',views.get_charts_trajet, name='get_charts_trajet'),
     path('dashboard/<int:numero_trajet>/', views.trajets_chart_view, name='trajets_chart_view'),
 ]
 
