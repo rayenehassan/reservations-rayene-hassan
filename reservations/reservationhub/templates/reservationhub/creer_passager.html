@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 {%extends 'reservationhub/base.html'%}
+
+{% block content%}
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -11,8 +13,10 @@
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Créer</button>
+        <button type="submit" class="btn btn-secondary">Créer</button>
         <a href="{% url 'reservationhub:trajets' %}" class="btn btn-secondary">Ne pas créer</a>
     </form>
 </body>
 </html>
+
+{%endblock%}
