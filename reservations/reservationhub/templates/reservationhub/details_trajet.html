@@ -5,23 +5,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Détails du trajet</title>
+    <!-- Link Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 
 <body>
-    <h1>Détails du trajet</h1>
-    <h2>{{ trajet }}</h2>
-    <p>Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }}, arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</p>
+    <div class="container"> <!-- Container Bootstrap -->
+        <h1>Détails du trajet</h1>
+        <h2>{{ trajet }}</h2>
+        <p>Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }}, arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</p>
 
-    <h2>Liste des passagers :</h2>
-    <ul>
-        {% for passager in passagers %}
-        <li>{{ passager.nom }} {{ passager.prenom }}</li>
-        {% empty %}
-        <li>Aucun passager pour ce trajet.</li>
-        {% endfor %}
-    </ul>
+        <h2>Liste des passagers :</h2>
+        <ul>
+            {% for passager in passagers %}
+            <li>{{ passager.nom }} {{ passager.prenom }}</li>
+            {% empty %}
+            <li>Aucun passager pour ce trajet.</li>
+            {% endfor %}
+        </ul>
 
-    <a href="{% url 'reservationhub:recherche_reservations' %}" class="btn btn-primary">Retour à la recherche de réservations</a>
+        <h2>Historique des réservations :</h2>
+        <div class="mt-5"> <!-- Ajout de marge top pour espacer le graphique -->
+            <canvas id="trajetsChart" width="400" height="400"></canvas>
+        </div>
+
+        <a href="{% url 'reservationhub:recherche_reservations' %}" class="btn btn-primary mt-3">Retour à la recherche de réservations</a>
+    </div>
+
+    <!-- Link Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Chart.js and custom script -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
+    <script>
+        // Function to load chart data via AJAX
+        function loadChart(chart, endpoint) {
+            $.ajax({
+                url: endpoint,
+                type: "GET",
+                dataType: "json",
+                success: (jsonResponse) => {
+                    const title = jsonResponse.title;
+                    const labels = jsonResponse.data.labels;
+                    const datasets = jsonResponse.data.datasets;
+
+                    // Reset the current chart
+                    chart.data.datasets = [];
+                    chart.data.labels = [];
+
+                    // Load new data into the chart
+                    chart.options.title.text = title;
+                    chart.options.title.display = true;
+                    chart.data.labels = labels;
+                    datasets.forEach(dataset => {
+                        chart.data.datasets.push(dataset);
+                    });
+                    chart.update();
+                },
+                error: () => console.log("Failed to fetch chart data from " + endpoint + "!")
+            });
+        }
+
+        // Initialize chart
+        let trajetsCtx = document.getElementById("trajetsChart").getContext("2d");
+        let trajetsChart = new Chart(trajetsCtx, {
+            type: "bar",
+            options: {
+                responsive: false,
+                title: {
+                    display: false,
+                    text: ""
+                }
+            }
+        });
+
+        // Call loadChart function to load initial data
+        loadChart(trajetsChart, "{% url 'reservationhub:get_charts_trajet' trajet_id%}");
+    </script>
 </body>
 
 </html>

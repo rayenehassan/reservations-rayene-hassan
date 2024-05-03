@@ -200,4 +200,4 @@ def details_trajet(request, trajet_id):
     passagers = Passager.objects.filter(reservation__trajet=trajet)
     
     # Passer le trajet et la liste des passagers au template pour l'affichage
-    return render(request, 'reservationhub/details_trajet.html', {'trajet': trajet, 'passagers': passagers})
+    return render(request, 'reservationhub/details_trajet.html', {'trajet': trajet, 'passagers': passagers,'trajet_id':trajet_id})
