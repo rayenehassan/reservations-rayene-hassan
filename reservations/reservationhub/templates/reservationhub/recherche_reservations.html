@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultats de la recherche</title>
+    <!-- Link vers Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="mt-4">Résultats de la recherche</h1>
+
+        <form class="mt-4" method="GET" action="{% url 'reservationhub:recherche_reservations' %}">
+            <div class="form-group">
+                <label for="gare">Choisir une gare :</label>
+                <select class="form-control" name="gare" id="gare">
+                    {% for gare in gares_disponibles %}
+                    <option value="{{ gare.nom }}" {% if gare.nom==gare_name %} selected {% endif %}>{{ gare.nom }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+        </form>
+
+        <h2 class="mt-4">Réservations pour la gare de départ "{{ gare_name }}" :</h2>
+        <ul class="list-group">
+            {% for reservation in reservations_depart %}
+            <li class="list-group-item">
+                <span>Réservation {{ reservation.trajet }}</span>
+                <span>Réservation ID {{ reservation.id }}</span>
+            </li>
+            {% empty %}
+            <li class="list-group-item">Aucune réservation pour cette gare de départ.</li>
+            {% endfor %}
+        </ul>
+
+        <h2 class="mt-4">Réservations pour la gare d'arrivée "{{ gare_name }}" :</h2>
+        <ul class="list-group">
+            {% for reservation in reservations_arrivee %}
+            <li class="list-group-item">Réservation ID {{ reservation.id }}</li>
+            {% empty %}
+            <li class="list-group-item">Aucune réservation pour cette gare d'arrivée.</li>
+            {% endfor %}
+        </ul>
+
+        {% for trajet in trajets_disponibles %}
+        <h2 class="mt-4">Réservations pour le trajet {{ trajet }} :</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Nombre de passagers</th>
+                    <th scope="col">Liste des passagers</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in trajet.reservation_set.all %}
+                <tr>
+                    <td>{{ reservation.nb_passagers }}</td>
+                    <td>
+                        <ul>
+                            {% for passager in reservation.passagers.all %}
+                            <li>{{ passager.nom }} {{ passager.prenom }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">Aucune réservation pour ce trajet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endfor %}
+    </div>
+    <!-- Link vers Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

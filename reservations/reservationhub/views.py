@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q
 from .models import Trajet, Gare, Reservation, Client, Passager
 from .forms import ReservationForm
 from datetime import datetime
@@ -8,6 +9,8 @@ from .forms import PassagerForm
 from django.contrib.auth.forms import UserCreationForm
 from .forms import CustomUserCreationForm
 from django.contrib.auth import login
+
+from django.db.models import Count
 
 # Create your views here.
 
@@ -126,21 +129,26 @@ def homepage_connecte(request):
         return render(request, 'reservationhub/homepage_connecte.html', {})
 
 
+def recherche_reservations(request):
+    gares_disponibles = Gare.objects.all()
+    gare_name = request.GET.get('gare')
 
+    reservations_depart = []
+    reservations_arrivee = []
 
+    if gare_name:
+        gare_depart = Gare.objects.filter(nom=gare_name).first()
+        if gare_depart:
+            reservations_depart = Reservation.objects.filter(trajet__gare_depart=gare_depart)
 
+        gare_arrivee = Gare.objects.filter(nom=gare_name).first()
+        if gare_arrivee:
+            reservations_arrivee = Reservation.objects.filter(trajet__gare_arrivee=gare_arrivee)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    context = {
+        'gares_disponibles': gares_disponibles,
+        'gare_name': gare_name,
+        'reservations_depart': reservations_depart,
+        'reservations_arrivee': reservations_arrivee,
+    }
+    return render(request, 'reservationhub/recherche_reservations.html', context)
