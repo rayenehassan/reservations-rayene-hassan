@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails du trajet</title>
+</head>
+
+<body>
+    <h1>Détails du trajet</h1>
+    <h2>{{ trajet }}</h2>
+    <p>Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }}, arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</p>
+
+    <h2>Liste des passagers :</h2>
+    <ul>
+        {% for passager in passagers %}
+        <li>{{ passager.nom }} {{ passager.prenom }}</li>
+        {% empty %}
+        <li>Aucun passager pour ce trajet.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'reservationhub:recherche_reservations' %}" class="btn btn-primary">Retour à la recherche de réservations</a>
+</body>
+
+</html>
