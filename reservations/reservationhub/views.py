@@ -143,7 +143,6 @@ def homepage_connecte(request):
 
 @login_required
 def get_charts_trajet(request,numero_trajet):
-    # if request.user.is_superuser:
         trajet = Trajet.objects.get(id=numero_trajet)
         reservations = Reservation.objects.filter(trajet=trajet)
         
@@ -168,29 +167,33 @@ def get_charts_trajet(request,numero_trajet):
 def trajets_chart_view(request, numero_trajet):
     return render(request, "reservationhub/admin_trajet_data.html", {'numero_trajet': numero_trajet})
 
+
 def recherche_reservations(request):
-    gares_disponibles = Gare.objects.all()
-    gare_name = request.GET.get('gare')
+    if request.user.is_superuser:
+        gares_disponibles = Gare.objects.all()
+        gare_name = request.GET.get('gare')
 
-    reservations_depart = []
-    reservations_arrivee = []
+        reservations_depart = []
+        reservations_arrivee = []
 
-    if gare_name:
-        gare_depart = Gare.objects.filter(nom=gare_name).first()
-        if gare_depart:
-            reservations_depart = Reservation.objects.filter(trajet__gare_depart=gare_depart)
+        if gare_name:
+            gare_depart = Gare.objects.filter(nom=gare_name).first()
+            if gare_depart:
+                reservations_depart = Reservation.objects.filter(trajet__gare_depart=gare_depart)
 
-        gare_arrivee = Gare.objects.filter(nom=gare_name).first()
-        if gare_arrivee:
-            reservations_arrivee = Reservation.objects.filter(trajet__gare_arrivee=gare_arrivee)
+            gare_arrivee = Gare.objects.filter(nom=gare_name).first()
+            if gare_arrivee:
+                reservations_arrivee = Reservation.objects.filter(trajet__gare_arrivee=gare_arrivee)
 
-    context = {
-        'gares_disponibles': gares_disponibles,
-        'gare_name': gare_name,
-        'reservations_depart': reservations_depart,
-        'reservations_arrivee': reservations_arrivee,
-    }
-    return render(request, 'reservationhub/recherche_reservations.html', context)
+        context = {
+            'gares_disponibles': gares_disponibles,
+            'gare_name': gare_name,
+            'reservations_depart': reservations_depart,
+            'reservations_arrivee': reservations_arrivee,
+        }
+        return render(request, 'reservationhub/recherche_reservations.html', context)
+    else:
+        return render(request, 'reservationhub/login', {})
 
 def details_trajet(request, trajet_id):
     # Récupérer le trajet à partir de son ID
