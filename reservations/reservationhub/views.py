@@ -85,11 +85,18 @@ def creer_passager(request):
     return render(request, 'reservationhub/creer_passager.html', {'form': form})
 
 
-def modifier_reservation(request, reservation_id):
+def modifier_reservation(request, reservation_id=None):
     utilisateur = request.user
     client = Client.objects.get(user=utilisateur)  
-
-    reservation = get_object_or_404(Reservation, id=reservation_id)
+    
+    
+    if (reservation_id == None):
+        reservation = None
+    else:
+        reservation = get_object_or_404(Reservation, id=reservation_id)
+        # si l'user cherche à accéder à une réservation qui n'est pas la sienne
+        if (reservation.client != client):
+            return redirect('reservationhub:mes_reservations')
 
     if request.method == 'POST':
         form = ReservationForm(request.POST, instance=reservation)
