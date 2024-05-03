@@ -24,6 +24,14 @@
             {% endfor %}
         </ul>
 
+        <!-- Encadré affichant le nombre de passagers -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Nombre de passagers</h5>
+                <p class="card-text">{{ passagers|length }}</p>
+            </div>
+        </div>
+
         <h2>Historique des réservations :</h2>
         <div class="mt-5"> <!-- Ajout de marge top pour espacer le graphique -->
             <canvas id="trajetsChart" width="400" height="400"></canvas>
