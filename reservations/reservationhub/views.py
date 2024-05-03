@@ -8,6 +8,12 @@ from .forms import PassagerForm
 from django.contrib.auth.forms import UserCreationForm
 from .forms import CustomUserCreationForm
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+
+
+# imports de la section chartJS
+from django.http import JsonResponse
+from .charts import months, colorPrimary, colorSuccess, colorDanger, generate_color_palette, get_year_dict
 
 # Create your views here.
 
@@ -125,17 +131,32 @@ def homepage_connecte(request):
     else:
         return render(request, 'reservationhub/homepage_connecte.html', {})
 
-def admin_trajets_data(request,numero_trajet):
+@login_required
+def get_charts_trajet(request,numero_trajet):
     # if request.user.is_superuser:
         trajet = Trajet.objects.get(id=numero_trajet)
         reservations = Reservation.objects.filter(trajet=trajet)
         
-        dates = reservations.values_list('date_reservation', flat=True).distinct()
+        dates = list(reservations.values_list('date_reservation', flat=True).distinct())
         nombre_reservations = [reservations.filter(date_reservation=date).count() for date in dates]
          
-        return render(request, 'reservationhub/admin_trajet_data.html', {'dates': dates, 'nombre_reservations': nombre_reservations, 'trajet': trajet})
+        return JsonResponse({
+            "title": f"Réservations du trajet {numero_trajet}",
+            "data": {
+                "labels": dates,
+                "datasets": [{
+                    "label": "Amount ($)",
+                    "backgroundColor": colorPrimary,
+                    "borderColor": colorPrimary,
+                    "data": nombre_reservations,
+                }]
+            },
+        })
     # else:
         # return render(request, 'reservationhub/admin_dashboard.html', {})
+
+def trajets_chart_view(request):
+    return render(request, "admin_trajet_data.html", {})
 
 
 

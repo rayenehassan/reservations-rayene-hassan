@@ -16,7 +16,9 @@ urlpatterns =[
     path('accueil/', views.homepage, name='accueil'),
     path('accueil_connecte/', views.homepage_connecte, name='accueil_connecte'),
     path('reservationhub/', views.homepage, name='accueil'),
-    path('dashboard/<int:trajet_id>/', views.admin_trajets_data, name='admin_trajets_data'),
     path('', views.homepage, name='accueil'),
+    
+    # URLS vers les différents charts possibles
+    path('dashboard/<int:numero_trajet>/', views.trajets_chart_view, name='trajets_chart_view'),
 ]
 
