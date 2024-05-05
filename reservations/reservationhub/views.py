@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q
 from .models import Trajet, Gare, Reservation, Client, Passager
 from .forms import ReservationForm
 from datetime import datetime
@@ -8,6 +9,14 @@ from .forms import PassagerForm
 from django.contrib.auth.forms import UserCreationForm
 from .forms import CustomUserCreationForm
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+
+
+# imports de la section chartJS
+from django.http import JsonResponse
+from .charts import months, colorPrimary, colorSuccess, colorDanger, generate_color_palette, get_year_dict
+
+from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -82,11 +91,20 @@ def creer_passager(request):
     return render(request, 'reservationhub/creer_passager.html', {'form': form})
 
 @login_required()
-def modifier_reservation(request, reservation_id):
+
+
+def modifier_reservation(request, reservation_id=None):
     utilisateur = request.user
     client = Client.objects.get(user=utilisateur)  
-
-    reservation = get_object_or_404(Reservation, id=reservation_id)
+    
+    
+    if (reservation_id == None):
+        reservation = None
+    else:
+        reservation = get_object_or_404(Reservation, id=reservation_id)
+        # si l'user cherche à accéder à une réservation qui n'est pas la sienne
+        if (reservation.client != client):
+            return redirect('reservationhub:mes_reservations')
 
     if request.method == 'POST':
         form = ReservationForm(request.POST, instance=reservation)
@@ -125,22 +143,66 @@ def homepage_connecte(request):
     else:
         return render(request, 'reservationhub/homepage_connecte.html', {})
 
+@login_required
+def get_charts_trajet(request,numero_trajet):
+        trajet = Trajet.objects.get(id=numero_trajet)
+        reservations = Reservation.objects.filter(trajet=trajet)
+        
+        dates = list(reservations.values_list('date_reservation', flat=True).distinct())
+        nombre_reservations = [reservations.filter(date_reservation=date).count() for date in dates]
+         
+        return JsonResponse({
+            "title": f"Réservations du trajet {numero_trajet}",
+            "data": {
+                "labels": dates,
+                "datasets": [{
+                    "label": "Amount ($)",
+                    "backgroundColor": colorPrimary,
+                    "borderColor": colorPrimary,
+                    "data": nombre_reservations,
+                }]
+            },
+        })
+    # else:
+        # return render(request, 'reservationhub/admin_dashboard.html', {})
+
+def trajets_chart_view(request, numero_trajet):
+    return render(request, "reservationhub/admin_trajet_data.html", {'numero_trajet': numero_trajet})
 
 
+def recherche_reservations(request):
+    if request.user.is_superuser:
+        gares_disponibles = Gare.objects.all()
+        gare_name = request.GET.get('gare')
 
+        reservations_depart = []
+        reservations_arrivee = []
 
+        if gare_name:
+            gare_depart = Gare.objects.filter(nom=gare_name).first()
+            if gare_depart:
+                reservations_depart = Reservation.objects.filter(trajet__gare_depart=gare_depart)
 
+            gare_arrivee = Gare.objects.filter(nom=gare_name).first()
+            if gare_arrivee:
+                reservations_arrivee = Reservation.objects.filter(trajet__gare_arrivee=gare_arrivee)
 
+        context = {
+            'gares_disponibles': gares_disponibles,
+            'gare_name': gare_name,
+            'reservations_depart': reservations_depart,
+            'reservations_arrivee': reservations_arrivee,
+        }
+        return render(request, 'reservationhub/recherche_reservations.html', context)
+    else:
+        return render(request, 'reservationhub/login', {})
 
-
-
-
-
-
-
-
-
-
-
-
-
+def details_trajet(request, trajet_id):
+    # Récupérer le trajet à partir de son ID
+    trajet = get_object_or_404(Trajet, pk=trajet_id)
+    
+    # Récupérer les passagers associés à ce trajet
+    passagers = Passager.objects.filter(reservation__trajet=trajet)
+    
+    # Passer le trajet et la liste des passagers au template pour l'affichage
+    return render(request, 'reservationhub/details_trajet.html', {'trajet': trajet, 'passagers': passagers,'trajet_id':trajet_id})
