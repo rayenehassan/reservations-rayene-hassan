@@ -200,9 +200,11 @@ def recherche_reservations(request):
 def details_trajet(request, trajet_id):
     # Récupérer le trajet à partir de son ID
     trajet = get_object_or_404(Trajet, pk=trajet_id)
-    
+    depart=trajet.gare_depart
+    arrivee=trajet.gare_arrivee
     # Récupérer les passagers associés à ce trajet
     passagers = Passager.objects.filter(reservation__trajet=trajet)
     
     # Passer le trajet et la liste des passagers au template pour l'affichage
-    return render(request, 'reservationhub/details_trajet.html', {'trajet': trajet, 'passagers': passagers,'trajet_id':trajet_id})
+    return render(request, 'reservationhub/details_trajet.html', {'trajet': trajet, 'passagers': passagers,'trajet_id':trajet_id,'depart':depart,'arrivee':arrivee})
+
