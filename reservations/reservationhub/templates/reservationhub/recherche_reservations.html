@@ -24,6 +24,9 @@
 
 
 <body>
+    <div style="margin-bottom: 20px;">
+        <button type="button" class="btn btn-warning" onclick="window.location.href='{% url 'reservationhub:trajets' %}'">Home</button>
+    </div>
     <script>
         // Function to load chart data via AJAX
         function loadChart(chart, endpoint) {
@@ -105,22 +108,24 @@
     
     
     </div>
-    <script>
-        // Initialize chart
-        let gareCtx = document.getElementById("gareChart").getContext("2d");
-        let gareChart = new Chart(gareCtx, {
-            type: 'line',
-            options: {
-                responsive: false,
-                title: {
-                    display: false,
-                    text: ""
+    {% if selected%}
+        <script>
+            // Initialize chart
+            let gareCtx = document.getElementById("gareChart").getContext("2d");
+            let gareChart = new Chart(gareCtx, {
+                type: 'line',
+                options: {
+                    responsive: false,
+                    title: {
+                        display: false,
+                        text: ""
+                    }
                 }
-            }
-        });
+            });
 
-        loadChart(gareChart, "{% url 'reservationhub:get_charts_gare' selected_gare.id%}");
-    </script>
+            loadChart(gareChart, "{% url 'reservationhub:get_charts_gare' selected_gare.id%}");
+        </script>
+    {%endif%}
 </body>
 
 </html>

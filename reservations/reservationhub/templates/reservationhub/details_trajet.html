@@ -1,4 +1,4 @@
-{%extends 'reservationhub/base.html'%}
+
 <!DOCTYPE html>
 <html lang="fr">
 {%block content%}
@@ -19,6 +19,7 @@
 </head>
 
 <body>
+    <a href="{% url 'reservationhub:recherche_reservations' %}" class="btn btn-primary mt-3">Retour à la recherche de réservations</a>
     <div class="container"> <!-- Container Bootstrap -->
         <h1>Détails du trajet</h1>
         <h2>{{ trajet }}</h2>
@@ -45,8 +46,6 @@
         <div class="mt-5"> <!-- Ajout de marge top pour espacer le graphique -->
             <canvas id="trajetsChart" width="400" height="400"></canvas>
         </div>
-
-        <a href="{% url 'reservationhub:recherche_reservations' %}" class="btn btn-primary mt-3">Retour à la recherche de réservations</a>
     </div>
 
     <!-- Link Bootstrap JS and jQuery -->

@@ -10,12 +10,13 @@ Accueil
     <title>Accueil </title>
 </head>
 <body>
-    <a href="{% url 'reservationhub:accueil' %}" style="position: absolute; top: 10px; right: 10px;">Se déconnecter</a>
+    <div style="margin-bottom: 20px;">
+        {% if user.is_superuser %}
+        <button type="button" class="btn btn-warning" onclick="window.location.href='{% url 'reservationhub:recherche_reservations' %}'">Panneau d'administration</button>
+        {% endif %}
+    </div>
 
     <h1 style="text-align: center;">SNCF Connect</h1>
-    {% if user.is_superuser %}
-    <a href="{% url 'reservationhub:recherche_reservations' %}" class="btn btn-warning mt-3">Panneau d'administration</a>
-    {% endif %}
     <h2>Trajets disponibles :</h2>
     <ul>
         {% for trajet in trajets %}
