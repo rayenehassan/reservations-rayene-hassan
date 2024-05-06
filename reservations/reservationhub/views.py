@@ -77,9 +77,6 @@ def dijkstra(graphe, depart, arrivee):
 
 
 
-from django.db.models import Q
-
-
 def trajets(request):
     trajets_disponibles = Trajet.objects.all()
     gares_disponibles = Gare.objects.all()
@@ -176,8 +173,6 @@ def creer_passager(request):
     return render(request, 'reservationhub/creer_passager.html', {'form': form})
 
 @login_required()
-
-
 def modifier_reservation(request, reservation_id=None):
     utilisateur = request.user
     client = Client.objects.get(user=utilisateur)  

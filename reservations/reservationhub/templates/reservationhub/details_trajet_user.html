@@ -41,10 +41,11 @@
             // coordonnées des stations
             var station1 = [{{ depart.latitude }}, {{ depart.longitude }}];
             var station2 = [{{ arrivee.latitude }}, {{ arrivee.longitude }}];
-            
+            var station3=[44.821996712, -0.55333112];
             // trajet
             var trajectoryCoords = [
                 station1,
+                station3,
                 station2
             ];
 
@@ -53,7 +54,7 @@
             var station2Marker = L.marker(station2,{alt: 'Gare {{arrivee.nom}}'}).addTo(map).bindPopup('Gare {{arrivee.nom}}');
 
             // afficher la ligne entre les 2 trajets
-            var trajectoryPolyline = L.polyline(trajectoryCoords, {color: 'red'}).addTo(map);
+            var trajectoryPolyline = L.polyline(trajectoryCoords, {color: 'green'}).addTo(map);
 
             map.fitBounds(trajectoryPolyline.getBounds());
         </script>
