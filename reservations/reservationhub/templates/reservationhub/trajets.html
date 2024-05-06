@@ -7,33 +7,29 @@ Liste des trajets
 {% block content %}
 <head>
     <meta charset="UTF-8">
-    <a href="{% url 'reservationhub:accueil' %}" class="btn btn-secondary">Se déconnecter</a>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des trajets</title>
     <!-- Link vers Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
+<body>
+    <!-- Boutons dans le head -->
+    <div style="margin-bottom: 20px;">
+        <!-- Bouton "Se déconnecter" -->
+        <button type="button" class="btn btn-secondary mr-2" onclick="window.location.href='{% url 'reservationhub:accueil' %}'">Se déconnecter</button>
+        
+        <!-- Bouton "Mes réservations" -->
+        <button type="button" class="btn btn-info mr-2" onclick="window.location.href='{% url 'reservationhub:mes_reservations' %}'">Mes réservations</button>
+        
+        <!-- Bouton "Panneau d'administration" pour les superutilisateurs -->
+        {% if user.is_superuser %}
+        <button type="button" class="btn btn-warning" onclick="window.location.href='{% url 'reservationhub:recherche_reservations' %}'">Panneau d'administration</button>
+        {% endif %}
+    </div>
+
     <h1>Liste des trajets disponibles</h1>
 
     <!-- Bootstrap List Group -->
-    <ul class="list-group">
-        {% for trajet in trajets %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <span>{{ trajet }}</span><br>
-                    <span>Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }}</span><br>
-                    <span>Arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</span>
-                </div>
-                <div>
-                    <a href="{% url 'reservationhub:details_trajet_user' trajet.id %}" class="btn btn-primary">Détails</a>
-                    <a href="{% url 'reservationhub:edit_reservation' trajet.id %}" class="btn btn-success">Réserver</a>
-                </div>
-            </li>
-        {% empty %}
-            <li class="list-group-item">Aucun trajet disponible.</li>
-        {% endfor %}
-    </ul>
-
     <h2>Filtrer les trajets par gare :</h2>
     <form method="GET" action="">
         <div class="form-row">
@@ -57,22 +53,38 @@ Liste des trajets
                 </select>
             </div>
         </div>
-
-        <button type="submit" class="btn btn-primary">Filtrer</button>
+        <div class="form-row">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">Filtrer</button>
+            </div>
+        </div>
     </form>
     
-    <a href="{% url 'reservationhub:mes_reservations' %}" class="btn btn-info mt-3">Mes réservations</a>
-    <br><br>
-    <a href="{% url 'reservationhub:accueil_connecte' %}" class="btn btn-secondary">Revenir à la page d'accueil</a>
-
-    <!-- Bouton d'administration pour les superutilisateurs -->
-    {% if user.is_superuser %}
-    <a href="{% url 'reservationhub:recherche_reservations' %}" class="btn btn-warning mt-3">Panneau d'administration</a>
-    {% endif %}
+    <ul class="list-group">
+        {% for trajet in trajets %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <span>{{ trajet }}</span><br>
+                    <span>Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }}</span><br>
+                    <span>Arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</span>
+                </div>
+                <div>
+                    <a href="{% url 'reservationhub:details_trajet_user' trajet.id %}" class="btn btn-primary">Détails</a>
+                    <a href="{% url 'reservationhub:edit_reservation' trajet.id %}" class="btn btn-success">Réserver</a>
+                </div>
+            </li>
+        {% empty %}
+            <li class="list-group-item">Aucun trajet disponible.</li>
+        {% endfor %}
+    </ul>
+    
+    <!-- Bouton retour à la page d'accueil -->
+    <a href="{% url 'reservationhub:accueil_connecte' %}" class="btn btn-secondary mt-3">Revenir à la page d'accueil</a>
 
     <!-- Link vers Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
 {% endblock %}
 </html>
