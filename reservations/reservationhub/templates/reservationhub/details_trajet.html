@@ -102,32 +102,33 @@
     <div id="map"></div>
     
 
-    <!-- Include JavaScript library -->
+    
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-        // Initialize map
-        var map = L.map('map').setView([0, 0], 2); // Set initial center and zoom level
+       
+        var map = L.map('map').setView([46.603354, 1.888334], 6); 
 
-        // Add tile layer (e.g., OpenStreetMap)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+		    attribution: '© OpenStreetMap contributors',
+		}).addTo(map);
 
-        // Define coordinates for the two stations
+        
         var station1 = [{{ depart.latitude }}, {{ depart.longitude }}];
         var station2 = [{{ arrivee.latitude }}, {{ arrivee.longitude }}];
 
-        // Define coordinates for the trajectory
+        // Déplacer les coordonnées sur la carte
         var trajectoryCoords = [
             [station1],
-            [station2]
+            [station2],
+            [44.821996712 ,-0.55333112]
         ];
 
-        // Create markers for the stations
+        
         var station1Marker = L.marker(station1).addTo(map);
         var station2Marker = L.marker(station2).addTo(map);
 
-        // Create polyline for the trajectory
+        // Créer l'itinéraire
         var trajectoryPolyline = L.polyline(trajectoryCoords, {color: 'red'}).addTo(map);
 
         map.fitBounds(trajectoryPolyline.getBounds());
