@@ -224,6 +224,15 @@ def recherche_reservations(request):
     else:
         return render(request, 'registration/login.html', {})
 
+def details_trajet_user(request, trajet_id):
+    # Récupérer le trajet à partir de son ID
+    trajet = get_object_or_404(Trajet, pk=trajet_id)
+    depart=trajet.gare_depart
+    arrivee=trajet.gare_arrivee
+    
+    # Passer le trajet et la liste des passagers au template pour l'affichage
+    return render(request, 'reservationhub/details_trajet_user.html', {'trajet': trajet, 'trajet_id':trajet_id,'depart':depart,'arrivee':arrivee})
+
 def details_trajet(request, trajet_id):
     # Récupérer le trajet à partir de son ID
     trajet = get_object_or_404(Trajet, pk=trajet_id)
