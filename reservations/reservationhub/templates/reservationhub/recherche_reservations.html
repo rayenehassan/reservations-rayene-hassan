@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultats de la recherche</title>
+    <!-- Link vers Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+ <!-- Link vers Bootstrap JS -->
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+ <!-- Link Bootstrap JS and jQuery -->
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+ <!-- Chart.js and custom script -->
+ <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
+
+
+<body>
+    <div style="margin-bottom: 20px;">
+        <button type="button" class="btn btn-warning" onclick="window.location.href='{% url 'reservationhub:trajets' %}'">Home</button>
+    </div>
+    <script>
+        // Function to load chart data via AJAX
+        function loadChart(chart, endpoint) {
+            $.ajax({
+                url: endpoint,
+                type: "GET",
+                dataType: "json",
+                success: (jsonResponse) => {
+                    const title = jsonResponse.title;
+                    const labels = jsonResponse.data.labels;
+                    const datasets = jsonResponse.data.datasets;
+   
+                    // Reset the current chart
+                    chart.data.datasets = [];
+                    chart.data.labels = [];
+   
+                    // Load new data into the chart
+                    chart.options.title.text = title;
+                    chart.options.title.display = true;
+                    chart.data.labels = labels;
+                    datasets.forEach(dataset => {
+                        chart.data.datasets.push(dataset);
+                    });
+                    chart.update();
+                },
+                error: () => console.log("Failed to fetch chart data from " + endpoint + "!")
+            });
+        }
+   
+    </script>
+    <div class="container">
+        <h1 class="mt-4">Résultats de la recherche</h1>
+
+        <form class="mt-4" method="GET" action="{% url 'reservationhub:recherche_reservations' %}">
+            <div class="form-group">
+                <label for="gare">Choisir une gare :</label>
+                <select class="form-control" name="gare" id="gare">
+                    {% for gare in gares_disponibles %}
+                    <option value="{{ gare.nom }}" {% if gare.nom == gare_name %} selected {% endif %}>{{ gare.nom }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+        </form>
+
+        <h2 class="mt-4">Réservations pour la gare de départ "{{ gare_name }}" :</h2>
+        <ul class="list-group">
+            {% for reservation in reservations_depart %}
+                {% ifchanged trajet %}
+                <span>
+                <li class="list-group-item">
+                    <a href="{% url 'reservationhub:details_trajet' reservation.trajet.id %}">{{ reservation.trajet }} - Départ le {{ reservation.trajet.date_heure_depart|date:"d/m/Y" }} à {{ reservation.trajet.date_heure_depart|date:"H:i" }} - Arrivée à {{ reservation.trajet.date_heure_arrivee|date:"H:i" }}</a>
+                {% endifchanged %}
+            </li>
+            {% empty %}
+            <span>
+            <li class="list-group-item">Aucune réservation pour cette gare de départ.</li>
+            {% endfor %}
+        </ul>
+
+        <h2 class="mt-4">Réservations pour la gare d'arrivée "{{ gare_name }}" :</h2>
+        <ul class="list-group">
+            {% for reservation in reservations_arrivee %}
+                {% ifchanged trajet %}
+                <li class="list-group-item">
+                <span>
+                    <a href="{% url 'reservationhub:details_trajet' reservation.trajet.id %}">{{ reservation.trajet }} - Départ le {{ reservation.trajet.date_heure_depart|date:"d/m/Y" }} à {{ reservation.trajet.date_heure_depart|date:"H:i" }} - Arrivée à {{ reservation.trajet.date_heure_arrivee|date:"H:i" }}</a>
+                {% endifchanged %}
+                <span>
+            {% empty %}
+            <li class="list-group-item">Aucune réservation pour cette gare d'arrivée.</li>
+            {% endfor %}
+        </ul>
+        <h2>Historique des réservations dans la gare :</h2>
+        <div class="mt-4">
+            <canvas id="gareChart" width="400" height="400"></canvas>
+        </div>
+    
+    
+    </div>
+    {% if selected%}
+        <script>
+            // Initialize chart
+            let gareCtx = document.getElementById("gareChart").getContext("2d");
+            let gareChart = new Chart(gareCtx, {
+                type: 'line',
+                options: {
+                    responsive: false,
+                    title: {
+                        display: false,
+                        text: ""
+                    }
+                }
+            });
+
+            loadChart(gareChart, "{% url 'reservationhub:get_charts_gare' selected_gare.id%}");
+        </script>
+    {%endif%}
+</body>
+
+</html>

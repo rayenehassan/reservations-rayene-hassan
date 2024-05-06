@@ -1,13 +1,24 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q
 from .models import Trajet, Gare, Reservation, Client, Passager
 from .forms import ReservationForm
 from datetime import datetime
 import random
+from django.db.models.functions import TruncDate
 from django.utils.crypto import get_random_string
 from .forms import PassagerForm
 from django.contrib.auth.forms import UserCreationForm
 from .forms import CustomUserCreationForm
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+
+
+# imports de la section chartJS
+from django.http import JsonResponse
+from .charts import months, colorPrimary, colorSuccess, colorDanger, generate_color_palette, get_year_dict
+
+from django.db.models import Count
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -111,16 +122,16 @@ def trajets(request):
 
 
 
+@login_required()
 def mes_reservations(request):
-    if request.user.is_authenticated:
-        client = Client.objects.get(user=request.user)
-        reservations = Reservation.objects.filter(utilisateur_reservation=client)
-        return render(request, 'reservationhub/mes_reservations.html', {'reservations': reservations})
-    else:
-        return render(request, 'reservationhub/mes_reservations.html', {})
+    
+    client = Client.objects.get(user=request.user)
+    reservations = Reservation.objects.filter(utilisateur_reservation=client)
+    return render(request, 'reservationhub/mes_reservations.html', {'reservations': reservations})
 
 
 
+@login_required()
 def edit_reservation(request, trajet_id):
     utilisateur = request.user
     client = Client.objects.get(user=utilisateur)  
@@ -164,12 +175,21 @@ def creer_passager(request):
         form = PassagerForm()
     return render(request, 'reservationhub/creer_passager.html', {'form': form})
 
+@login_required()
 
-def modifier_reservation(request, reservation_id):
+
+def modifier_reservation(request, reservation_id=None):
     utilisateur = request.user
     client = Client.objects.get(user=utilisateur)  
-
-    reservation = get_object_or_404(Reservation, id=reservation_id)
+    
+    
+    if (reservation_id == None):
+        reservation = None
+    else:
+        reservation = get_object_or_404(Reservation, id=reservation_id)
+        # si l'user cherche à accéder à une réservation qui n'est pas la sienne
+        if (reservation.client != client):
+            return redirect('reservationhub:mes_reservations')
 
     if request.method == 'POST':
         form = ReservationForm(request.POST, instance=reservation)
@@ -200,6 +220,7 @@ def homepage(request):
     gares_disponibles = Gare.objects.all()
     return render(request, 'reservationhub/homepage.html', {'trajets': trajets_disponibles, 'gares': gares_disponibles})
 
+@login_required()
 def homepage_connecte(request):
     if request.user.is_authenticated:
         trajets_disponibles = Trajet.objects.all()
@@ -207,30 +228,115 @@ def homepage_connecte(request):
         return render(request, 'reservationhub/homepage_connecte.html', {'trajets': trajets_disponibles, 'gares': gares_disponibles})
     else:
         return render(request, 'reservationhub/homepage_connecte.html', {})
+
+def get_charts_gare(request,gare_id):
+    gare = Gare.objects.get(id=gare_id)
+    reservations = Reservation.objects.filter(gare_depart=gare) | Reservation.objects.filter(gare_arrivee=gare)
     
+    # Agréger les réservations par date
+    reservations_par_date = reservations.annotate(date=TruncDate('date_reservation')).values('date').annotate(total=Count('id')).order_by('date')
+
+    # Récupérer les dates et les nombres de réservations
+    dates = [entry['date'] for entry in reservations_par_date]
+    nombre_reservations = [entry['total'] for entry in reservations_par_date]
+
+    # Formater les dates au format JavaScript Date (milliseconds since Unix epoch)
+    dates_formattees = [int(datetime.combine(date, datetime.min.time()).timestamp()) * 1000 for date in dates]
+        
+    return JsonResponse({
+        "title": f"Fréquentation gare {gare.nom}",
+        "data": {
+            "labels": dates_formattees,
+            "datasets": [{
+                "label": "Nombre de réservations",
+                "backgroundColor": "rgba(75, 192, 192, 0.2)",
+                "borderColor": "rgba(75, 192, 192, 1)",
+                "data": nombre_reservations,
+            }]
+        },
+    })
+        
+def get_charts_trajet(request, numero_trajet):
+        trajet = Trajet.objects.get(id=numero_trajet)
+        reservations = Reservation.objects.filter(trajet=trajet)
+        
+        dates = list(reservations.values_list('date_reservation', flat=True).distinct())
+        nombre_reservations = [reservations.filter(date_reservation=date).count() for date in dates]
+         
+        return JsonResponse({
+            "title": f"Réservations du trajet {numero_trajet}",
+            "data": {
+                "labels": dates,
+                "datasets": [{
+                    "label": "Amount ($)",
+                    "backgroundColor": colorPrimary,
+                    "borderColor": colorPrimary,
+                    "data": nombre_reservations,
+                }]
+            },
+        })
+
+
+def trajets_chart_view(request, numero_trajet):
+    return render(request, "reservationhub/admin_trajet_data.html", {'numero_trajet': numero_trajet})
+
+
+def recherche_reservations(request):
+    if request.user.is_superuser:
+        gares_disponibles = Gare.objects.all()
+        gare_name = request.GET.get('gare')
+
+        reservations_depart = []
+        reservations_arrivee = []
+
+        if gare_name:
+            gare_depart = Gare.objects.filter(nom=gare_name).first()
+            if gare_depart:
+                reservations_depart = Reservation.objects.filter(trajet__gare_depart=gare_depart)
+
+            gare_arrivee = Gare.objects.filter(nom=gare_name).first()
+            if gare_arrivee:
+                reservations_arrivee = Reservation.objects.filter(trajet__gare_arrivee=gare_arrivee)
+        if gare_name:
+            context = {
+                'gares_disponibles': gares_disponibles,
+                'gare_name': gare_name,
+                'selected': True,
+                'selected_gare': gare_depart,
+                'reservations_depart': reservations_depart,
+                'reservations_arrivee': reservations_arrivee,
+            }
+        else:
+            context = {
+                'gares_disponibles': gares_disponibles,
+                'gare_name': gare_name,
+                'selected' : False,
+                'reservations_depart': reservations_depart,
+                'reservations_arrivee': reservations_arrivee,
+            }
+            
+        return render(request, 'reservationhub/recherche_reservations.html', context)
+    else:
+        return render(request, 'registration/login.html', {})
+
+def details_trajet_user(request, trajet_id):
+    # Récupérer le trajet à partir de son ID
+    trajet = get_object_or_404(Trajet, pk=trajet_id)
+    depart=trajet.gare_depart
+    arrivee=trajet.gare_arrivee
     
+    # Passer le trajet et la liste des passagers au template pour l'affichage
+    return render(request, 'reservationhub/details_trajet_user.html', {'trajet': trajet, 'trajet_id':trajet_id,'depart':depart,'arrivee':arrivee})
+
+def details_trajet(request, trajet_id):
+    # Récupérer le trajet à partir de son ID
+    trajet = get_object_or_404(Trajet, pk=trajet_id)
+    depart=trajet.gare_depart
+    arrivee=trajet.gare_arrivee
+    # Récupérer les passagers associés à ce trajet
+    passagers = Passager.objects.filter(reservation__trajet=trajet)
+    
+    # Passer le trajet et la liste des passagers au template pour l'affichage
+    return render(request, 'reservationhub/details_trajet.html', {'trajet': trajet, 'passagers': passagers,'trajet_id':trajet_id,'depart':depart,'arrivee':arrivee})
 
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

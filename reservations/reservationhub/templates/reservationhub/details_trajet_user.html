@@ -1,0 +1,62 @@
+{%extends 'reservationhub/base.html'%}
+<!DOCTYPE html>
+<html lang="fr">
+{%block content%}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails du trajet</title>
+    <!-- Link Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    
+    <style>
+        #map {
+            height: 500px;
+            weight:500px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container"> <!-- Container Bootstrap -->
+        <h1>Détails du trajet</h1>
+        <h2>{{ trajet }}</h2>
+        <p>Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }}, arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</p>
+
+        <!-- Include JavaScript library -->
+    </div>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+        <script>
+            // Initialiser map
+            var map = L.map('map').setView([46.603354, 1.888334], 6); // Set initial center and zoom level
+
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // coordonnées des stations
+            var station1 = [{{ depart.latitude }}, {{ depart.longitude }}];
+            var station2 = [{{ arrivee.latitude }}, {{ arrivee.longitude }}];
+            
+            // trajet
+            var trajectoryCoords = [
+                station1,
+                station2
+            ];
+
+            // Créer des markers 
+            var station1Marker = L.marker(station1,{alt: 'Gare {{depart.nom}}'}).addTo(map).bindPopup('Gare {{depart.nom}}');
+            var station2Marker = L.marker(station2,{alt: 'Gare {{arrivee.nom}}'}).addTo(map).bindPopup('Gare {{arrivee.nom}}');
+
+            // afficher la ligne entre les 2 trajets
+            var trajectoryPolyline = L.polyline(trajectoryCoords, {color: 'red'}).addTo(map);
+
+            map.fitBounds(trajectoryPolyline.getBounds());
+        </script>
+</body>
+{%endblock%}
+</html>

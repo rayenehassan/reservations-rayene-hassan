@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+{%block content%}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails du trajet</title>
+    <!-- Link Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <style>
+        #map {
+            height: 400px;
+            weight:400px;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="{% url 'reservationhub:recherche_reservations' %}" class="btn btn-primary mt-3">Retour à la recherche de réservations</a>
+    <div class="container"> <!-- Container Bootstrap -->
+        <h1>Détails du trajet</h1>
+        <h2>{{ trajet }}</h2>
+        <p>Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }}, arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</p>
+
+        <h2>Liste des passagers :</h2>
+        <ul>
+            {% for passager in passagers %}
+            <li>{{ passager.nom }} {{ passager.prenom }}</li>
+            {% empty %}
+            <li>Aucun passager pour ce trajet.</li>
+            {% endfor %}
+        </ul>
+
+        <!-- Encadré affichant le nombre de passagers -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Nombre de passagers</h5>
+                <p class="card-text">{{ passagers|length }}</p>
+            </div>
+        </div>
+
+        <h2>Historique des réservations :</h2>
+        <div class="mt-5"> <!-- Ajout de marge top pour espacer le graphique -->
+            <canvas id="trajetsChart" width="400" height="400"></canvas>
+        </div>
+    </div>
+
+    <!-- Link Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Chart.js and custom script -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
+    <script>
+        // Function to load chart data via AJAX
+        function loadChart(chart, endpoint) {
+            $.ajax({
+                url: endpoint,
+                type: "GET",
+                dataType: "json",
+                success: (jsonResponse) => {
+                    const title = jsonResponse.title;
+                    const labels = jsonResponse.data.labels;
+                    const datasets = jsonResponse.data.datasets;
+
+                    // Reset the current chart
+                    chart.data.datasets = [];
+                    chart.data.labels = [];
+
+                    // Load new data into the chart
+                    chart.options.title.text = title;
+                    chart.options.title.display = true;
+                    chart.data.labels = labels;
+                    datasets.forEach(dataset => {
+                        chart.data.datasets.push(dataset);
+                    });
+                    chart.update();
+                },
+                error: () => console.log("Failed to fetch chart data from " + endpoint + "!")
+            });
+        }
+
+        // Initialize chart
+        let trajetsCtx = document.getElementById("trajetsChart").getContext("2d");
+        let trajetsChart = new Chart(trajetsCtx, {
+            type: "bar",
+            options: {
+                responsive: false,
+                title: {
+                    display: false,
+                    text: ""
+                }
+            }
+        });
+
+        // Call loadChart function to load initial data
+        loadChart(trajetsChart, "{% url 'reservationhub:get_charts_trajet' trajet_id%}");
+    </script>
+
+
+    <div id="map"></div>
+    <!-- Include JavaScript library -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+       
+        var map = L.map('map').setView([46.603354, 1.888334], 6); 
+
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+		    attribution: '© OpenStreetMap contributors',
+		}).addTo(map);
+
+        
+        var station1 = [{{ depart.latitude }}, {{ depart.longitude }}];
+        var station2 = [{{ arrivee.latitude }}, {{ arrivee.longitude }}];
+
+        // Déplacer les coordonnées sur la carte
+        var trajectoryCoords = [
+            station1,
+            station2,
+        
+        ];
+
+        
+        var station1Marker = L.marker(station1,{alt: 'Gare {{depart.nom}}'}).addTo(map).bindPopup('Gare {{depart.nom}}');
+        var station2Marker = L.marker(station2,{alt: 'Gare {{arrivee.nom}}'}).addTo(map).bindPopup('Gare {{arrivee.nom}}');
+
+
+        // Créer l'itinéraire
+        var trajectoryPolyline = L.polyline(trajectoryCoords, {color: 'red'}).addTo(map);
+
+        map.fitBounds(trajectoryPolyline.getBounds());
+    </script>
+</body>
+
+{%endblock%}
+</html>

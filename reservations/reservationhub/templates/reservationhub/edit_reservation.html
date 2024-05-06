@@ -1,5 +1,10 @@
 <!DOCTYPE html>
+{%extends 'reservationhub/base.html'%}
+
+{% block content%}
+
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,8 +19,12 @@
         <br><br>
         <input type="hidden" name="trajet_id" value="{{ trajet.id }}">
         <input type="hidden" name="utilisateur" value="{{ request.user.client.id }}">
-        <button type="submit">Réserver</button>
-        <a href="{% url 'reservationhub:trajets' %}" class="btn btn-secondary">Ne pas réserver</a>
+        <button type="submit" class="btn btn-success">Réserver</button>
+        <a href="{% url 'reservationhub:trajets' %}" class="btn btn-secondary">Annuler</a>
     </form>
 </body>
+
+
+
+{%endblock%}
 </html>

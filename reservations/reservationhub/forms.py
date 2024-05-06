@@ -1,4 +1,5 @@
 from django import forms
+from django.db import models
 from .models import Reservation
 from .models import Passager
 from django.contrib.auth.forms import UserCreationForm
@@ -21,6 +22,8 @@ class PassagerForm(forms.ModelForm):
     class Meta:
         model = Passager
         fields = ['nom', 'prenom', 'date_naissance']
+        # Spécifiez le format de date souhaité
+        input_formats = ['%d/%m/%Y']
 
 
 class CustomUserCreationForm(UserCreationForm):
