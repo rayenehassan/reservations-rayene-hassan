@@ -16,7 +16,7 @@ Liste des trajets
     <ul>
         {% for trajet in trajets %}
             <li>
-                <a href="{% url 'reservationhub:details_trajet' trajet.id %}">{{ trajet }} - Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }} - Arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</a>
+                <a href="{% url 'reservationhub:details_trajet_user' trajet.id %}">{{ trajet }} - Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }} - Arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</a>
             </li>
         {% empty %}
             <li>Aucun trajet disponible.</li>

@@ -9,6 +9,7 @@ urlpatterns =[
     path("trajets/", views.trajets, name='trajets'),
     path("recherche_reservations/", views.recherche_reservations, name='recherche_reservations'),
     path('details_trajet/<int:trajet_id>/', views.details_trajet, name='details_trajet'),
+    path('details_trajet_user/<int:trajet_id>/', views.details_trajet_user, name='details_trajet_user'),
     path("mes_reservations/", views.mes_reservations, name='mes_reservations'),
     path("login/", auth_views.LoginView.as_view(), name='login'),
     path('trajets/edit_reservation/<int:trajet_id>/', views.edit_reservation, name='edit_reservation'),
