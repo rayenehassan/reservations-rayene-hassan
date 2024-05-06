@@ -135,6 +135,7 @@ def homepage(request):
     trajets_disponibles = Trajet.objects.all()
     gares_disponibles = Gare.objects.all()
     return render(request, 'reservationhub/homepage.html', {'trajets': trajets_disponibles, 'gares': gares_disponibles})
+
 @login_required()
 def homepage_connecte(request):
     if request.user.is_authenticated:
@@ -221,7 +222,7 @@ def recherche_reservations(request):
         }
         return render(request, 'reservationhub/recherche_reservations.html', context)
     else:
-        return render(request, 'reservationhub/login', {})
+        return render(request, 'registration/login.html', {})
 
 def details_trajet(request, trajet_id):
     # Récupérer le trajet à partir de son ID
