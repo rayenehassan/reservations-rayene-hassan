@@ -1,12 +1,20 @@
+{%extends 'reservationhub/base.html'%}
 <!DOCTYPE html>
 <html lang="fr">
-
+{%block content%}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Détails du trajet</title>
     <!-- Link Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 500px;
+            weight:500px;
+        }
+    </style>
 </head>
 
 <body>
@@ -91,6 +99,39 @@
         // Call loadChart function to load initial data
         loadChart(trajetsChart, "{% url 'reservationhub:get_charts_trajet' trajet_id%}");
     </script>
-</body>
+    <div id="map"></div>
+    
 
+    <!-- Include JavaScript library -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Initialize map
+        var map = L.map('map').setView([0, 0], 2); // Set initial center and zoom level
+
+        // Add tile layer (e.g., OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Define coordinates for the two stations
+        var station1 = [{{ depart.latitude }}, {{ depart.longitude }}];
+        var station2 = [{{ arrivee.latitude }}, {{ arrivee.longitude }}];
+
+        // Define coordinates for the trajectory
+        var trajectoryCoords = [
+            [station1],
+            [station2]
+        ];
+
+        // Create markers for the stations
+        var station1Marker = L.marker(station1).addTo(map);
+        var station2Marker = L.marker(station2).addTo(map);
+
+        // Create polyline for the trajectory
+        var trajectoryPolyline = L.polyline(trajectoryCoords, {color: 'red'}).addTo(map);
+
+        map.fitBounds(trajectoryPolyline.getBounds());
+    </script>
+</body>
+{%endblock%}
 </html>

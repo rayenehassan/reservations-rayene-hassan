@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 
 class Gare(models.Model):
     nom = models.CharField(max_length=100)
+    latitude = models.DecimalField(max_digits=20, decimal_places=9)  
+    longitude = models.DecimalField(max_digits=20, decimal_places=9)  
     def __str__(self):
         return self.nom
 
