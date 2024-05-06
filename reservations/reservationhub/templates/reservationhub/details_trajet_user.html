@@ -25,35 +25,37 @@
         <p>Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }}, arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</p>
 
         <!-- Include JavaScript library -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script>
-        // Initialize map
-        var map = L.map('map').setView([0, 0], 2); // Set initial center and zoom level
+    </div>
+    <div id="map"></div>
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script>
+            // Initialize map
+            var map = L.map('map').setView([0, 0], 2); // Set initial center and zoom level
 
-        // Add tile layer (e.g., OpenStreetMap)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+            // Add tile layer (e.g., OpenStreetMap)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
 
-        // Define coordinates for the two stations
-        var station1 = [{{ depart.latitude }}, {{ depart.longitude }}];
-        var station2 = [{{ arrivee.latitude }}, {{ arrivee.longitude }}];
+            // Define coordinates for the two stations
+            var station1 = [{{ depart.latitude }}, {{ depart.longitude }}];
+            var station2 = [{{ arrivee.latitude }}, {{ arrivee.longitude }}];
+            
+            // Define coordinates for the trajectory
+            var trajectoryCoords = [
+                station1,
+                station2
+            ];
 
-        // Define coordinates for the trajectory
-        var trajectoryCoords = [
-            [station1],
-            [station2]
-        ];
+            // Create markers for the stations
+            var station1Marker = L.marker(station1,{alt: 'Gare {{depart.nom}}'}).addTo(map).bindPopup('Gare {{depart.nom}}');
+            var station2Marker = L.marker(station2,{alt: 'Gare {{arrivee.nom}}'}).addTo(map).bindPopup('Gare {{arrivee.nom}}');
 
-        // Create markers for the stations
-        var station1Marker = L.marker(station1).addTo(map);
-        var station2Marker = L.marker(station2).addTo(map);
+            // Create polyline for the trajectory
+            var trajectoryPolyline = L.polyline(trajectoryCoords, {color: 'red'}).addTo(map);
 
-        // Create polyline for the trajectory
-        var trajectoryPolyline = L.polyline(trajectoryCoords, {color: 'red'}).addTo(map);
-
-        map.fitBounds(trajectoryPolyline.getBounds());
-    </script>
+            map.fitBounds(trajectoryPolyline.getBounds());
+        </script>
 </body>
 {%endblock%}
 </html>
