@@ -183,7 +183,7 @@ def modifier_reservation(request, reservation_id=None):
     else:
         reservation = get_object_or_404(Reservation, id=reservation_id)
         # si l'user cherche à accéder à une réservation qui n'est pas la sienne
-        if (reservation.client != client):
+        if (reservation.utilisateur_reservation != client):
             return redirect('reservationhub:mes_reservations')
 
     if request.method == 'POST':

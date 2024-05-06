@@ -32,8 +32,9 @@ def generate_reservations(num_reservations):
         date_reservation_random = datetime.now() + sign*timedelta(days=random.randint(1, 30))
 
         # Sélection aléatoire d'un passager et d'un client
-        passager = random.choice(passagers)
         client = random.choice(clients)
+        passager_du_client = Passager.objects.filter(utilisateur=client)
+        passager = random.choice(passager_du_client)
 
         # Création de la réservation
         reservation = Reservation.objects.create(
