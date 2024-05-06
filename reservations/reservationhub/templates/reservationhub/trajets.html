@@ -55,11 +55,20 @@ Liste des trajets
             </div>
         </div>
     </form>
-    
+
+    {% if gare_depart_id and gare_arrivee_id %} 
+        <h2>Trajets pour {{ nom_gare_depart }} -> {{ nom_gare_arrivee }} : </h2>
+    {% endif %}
+
     <ul class="list-group">
         {% for trajet in trajets %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <div>
+                    {% if trajet.correspondance %}
+                        <span class="badge" style="background-color: {{ trajet.couleur_solution }};">Avec correspondance</span>
+                    {% else %}
+                        <span class="badge badge-success">Direct</span>
+                    {% endif %}
                     <span>{{ trajet }}</span><br>
                     <span>Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }}</span><br>
                     <span>Arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</span>
@@ -74,6 +83,8 @@ Liste des trajets
         {% endfor %}
     </ul>
     
+    </ul>
+    
     <!-- Bouton retour à la page d'accueil -->
     <a href="{% url 'reservationhub:accueil_connecte' %}" class="btn btn-secondary mt-3">Revenir à la page d'accueil</a>
 
@@ -83,4 +94,4 @@ Liste des trajets
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 {% endblock %}
-</html>
+</html> 
