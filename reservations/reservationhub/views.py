@@ -11,6 +11,64 @@ from django.contrib.auth import login
 
 # Create your views here.
 
+def construire_graphe_trajets(trajets):
+    graphe = {}
+
+    for trajet in trajets:
+        gare_depart = trajet.gare_depart
+        gare_arrivee = trajet.gare_arrivee
+        duree_trajet = trajet.date_heure_arrivee - trajet.date_heure_depart
+
+        if gare_depart not in graphe:
+            graphe[gare_depart] = []
+
+        graphe[gare_depart].append((gare_arrivee, duree_trajet))
+
+    return graphe
+
+
+def dijkstra(graphe, depart, arrivee):
+    distances = {gare: float('inf') for gare in graphe}
+    distances[depart] = 0
+    precedents = {}
+    non_visites = {gare: distances[gare] for gare in graphe}
+
+    while non_visites:
+        gare_actuelle = min(non_visites, key=non_visites.get)
+        
+        # Si la gare actuelle est la gare d'arrivée, arrêtez la boucle
+        if gare_actuelle == arrivee:
+            break
+        
+        for gare_suivante, duree in graphe.get(gare_actuelle, []):
+            duree_minutes = duree.total_seconds() / 60
+            nouvelle_distance = distances[gare_actuelle] + duree_minutes
+            if nouvelle_distance < distances.get(gare_suivante, float('inf')):
+                distances[gare_suivante] = nouvelle_distance
+                precedents[gare_suivante] = gare_actuelle  
+                non_visites[gare_suivante] = nouvelle_distance
+
+        del non_visites[gare_actuelle]
+
+    # Si aucune solution n'a été trouvée
+    if arrivee not in precedents:
+        return None
+
+    chemin = []
+    gare_actuelle = arrivee
+    while gare_actuelle != depart:
+        chemin.append(gare_actuelle)
+        gare_actuelle = precedents[gare_actuelle]
+    chemin.append(depart)
+    chemin.reverse()
+
+    return {'chemin': chemin, 'distance': distances[arrivee]}
+
+
+
+from django.db.models import Q
+
+
 def trajets(request):
     trajets_disponibles = Trajet.objects.all()
     gares_disponibles = Gare.objects.all()
@@ -19,14 +77,39 @@ def trajets(request):
         gare_depart_id = request.GET.get('gare_depart')
         gare_arrivee_id = request.GET.get('gare_arrivee')
 
-        if gare_depart_id:
+        if gare_depart_id and gare_arrivee_id:
             gare_depart = get_object_or_404(Gare, pk=gare_depart_id)
-            trajets_disponibles = trajets_disponibles.filter(gare_depart=gare_depart)
-        if gare_arrivee_id:
             gare_arrivee = get_object_or_404(Gare, pk=gare_arrivee_id)
-            trajets_disponibles = trajets_disponibles.filter(gare_arrivee=gare_arrivee)
+
+            trajets_optimaux = []
+
+            for _ in range(3):  # Répéter trois fois pour trouver les trois trajets les plus courts
+                graphe_trajets = construire_graphe_trajets(trajets_disponibles)
+                resultats_dijkstra = dijkstra(graphe_trajets, gare_depart, gare_arrivee)
+
+                if resultats_dijkstra is not None and 'chemin' in resultats_dijkstra:
+                    trajet_courant = []
+                    for i in range(len(resultats_dijkstra['chemin']) - 1):
+                        trajet = Trajet.objects.filter(gare_depart=resultats_dijkstra['chemin'][i],
+                                               gare_arrivee=resultats_dijkstra['chemin'][i + 1]).first()
+                        trajet_courant.append(trajet)
+
+                    trajets_optimaux.extend(trajet_courant)
+
+                    # Supprimez les trajets optimaux des trajets disponibles pour la prochaine itération
+                    trajets_disponibles = trajets_disponibles.exclude(pk__in=[trajet.pk for trajet in trajet_courant])
+
+                else:
+                    break  # S'il n'y a pas de solution, arrêtez la boucle
+
+            if not trajets_optimaux:
+                return render(request, 'reservationhub/trajets.html', {'trajets': [], 'gares': gares_disponibles})
+
+            return render(request, 'reservationhub/trajets.html', {'trajets': trajets_optimaux, 'gares': gares_disponibles})
 
     return render(request, 'reservationhub/trajets.html', {'trajets': trajets_disponibles, 'gares': gares_disponibles})
+
+
 
 def mes_reservations(request):
     if request.user.is_authenticated:
@@ -124,6 +207,13 @@ def homepage_connecte(request):
         return render(request, 'reservationhub/homepage_connecte.html', {'trajets': trajets_disponibles, 'gares': gares_disponibles})
     else:
         return render(request, 'reservationhub/homepage_connecte.html', {})
+    
+    
+
+    
+
+
+
 
 
 

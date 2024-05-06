@@ -8,15 +8,17 @@
 <body>
     <a href="{% url 'reservationhub:accueil' %}" style="position: absolute; top: 10px; right: 10px;">Se déconnecter</a>
     <h1>Liste des trajets disponibles</h1>
+    {% if trajets %}
     <ul>
         {% for trajet in trajets %}
             <li>
-                <a href="{% url 'reservationhub:edit_reservation' trajet.id %}">{{ trajet }} - Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }} - Arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</a>
+                <a href="{% url 'reservationhub:edit_reservation' trajet.id %}">{{ trajet }} - Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }} - Arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</a> 
             </li>
-        {% empty %}
-            <li>Aucun trajet disponible.</li>
         {% endfor %}
     </ul>
+    {% else %}
+        <p>Aucun trajet disponible.</p>
+    {% endif %}
 
     <h2>Filtrer les trajets par gare :</h2>
     <form method="GET" action="">
@@ -44,5 +46,6 @@
     <a href="{% url 'reservationhub:accueil_connecte' %}" class="reservations-button" style="margin-top: 20px; display: inline-block;">Revenir à la page d'accueil</a>
 
 </body>
-</html>
+</html> 
+
 
