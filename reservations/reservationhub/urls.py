@@ -23,7 +23,7 @@ urlpatterns =[
    
     # URLS vers les différents charts possibles
     path('dashboard/suivi_reservations/<int:numero_trajet>/',views.get_charts_trajet, name='get_charts_trajet'),
-    path('dashboard/suivi_reservations/<str:nom_gare>/',views.get_charts_gare, name='get_charts_gare'),
+    path('dashboard/suivi_reservations/<int:gare_id>/',views.get_charts_gare, name='get_charts_gare'),
     path('dashboard/<int:numero_trajet>/', views.trajets_chart_view, name='trajets_chart_view'),
 ]
 

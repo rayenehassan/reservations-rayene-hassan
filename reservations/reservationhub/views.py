@@ -145,8 +145,8 @@ def homepage_connecte(request):
     else:
         return render(request, 'reservationhub/homepage_connecte.html', {})
 
-def get_charts_gare(nom_gare):
-    gare = Gare.objects.get(nom=nom_gare)
+def get_charts_gare(request,gare_id):
+    gare = Gare.objects.get(id=gare_id)
     reservations = Reservation.objects.filter(gare_depart=gare) | Reservation.objects.filter(gare_arrivee=gare)
     
     # Agréger les réservations par date
@@ -172,7 +172,7 @@ def get_charts_gare(nom_gare):
         },
     })
         
-def get_charts_trajet(numero_trajet):
+def get_charts_trajet(request, numero_trajet):
         trajet = Trajet.objects.get(id=numero_trajet)
         reservations = Reservation.objects.filter(trajet=trajet)
         
@@ -217,6 +217,7 @@ def recherche_reservations(request):
         context = {
             'gares_disponibles': gares_disponibles,
             'gare_name': gare_name,
+            'selected_gare': gare_depart,
             'reservations_depart': reservations_depart,
             'reservations_arrivee': reservations_arrivee,
         }
