@@ -4,6 +4,7 @@ from .models import Trajet, Gare, Reservation, Client, Passager
 from .forms import ReservationForm
 from datetime import datetime
 import random
+from django.db.models.functions import TruncDate
 from django.utils.crypto import get_random_string
 from .forms import PassagerForm
 from django.contrib.auth.forms import UserCreationForm
@@ -141,6 +142,33 @@ def homepage_connecte(request):
     else:
         return render(request, 'reservationhub/homepage_connecte.html', {})
 
+def get_charts_gare(nom_gare):
+    gare = Gare.objects.get(nom=nom_gare)
+    reservations = Reservation.objects.filter(gare_depart=gare) | Reservation.objects.filter(gare_arrivee=gare)
+    
+    # Agréger les réservations par date
+    reservations_par_date = reservations.annotate(date=TruncDate('date_reservation')).values('date').annotate(total=Count('id')).order_by('date')
+
+    # Récupérer les dates et les nombres de réservations
+    dates = [entry['date'] for entry in reservations_par_date]
+    nombre_reservations = [entry['total'] for entry in reservations_par_date]
+
+    # Formater les dates au format JavaScript Date (milliseconds since Unix epoch)
+    dates_formattees = [int(datetime.combine(date, datetime.min.time()).timestamp()) * 1000 for date in dates]
+        
+    return JsonResponse({
+        "title": f"Fréquentation gare {gare.nom}",
+        "data": {
+            "labels": dates_formattees,
+            "datasets": [{
+                "label": "Nombre de réservations",
+                "backgroundColor": "rgba(75, 192, 192, 0.2)",
+                "borderColor": "rgba(75, 192, 192, 1)",
+                "data": nombre_reservations,
+            }]
+        },
+    })
+        
 def get_charts_trajet(numero_trajet):
         trajet = Trajet.objects.get(id=numero_trajet)
         reservations = Reservation.objects.filter(trajet=trajet)
@@ -160,6 +188,7 @@ def get_charts_trajet(numero_trajet):
                 }]
             },
         })
+
 
 def trajets_chart_view(request, numero_trajet):
     return render(request, "reservationhub/admin_trajet_data.html", {'numero_trajet': numero_trajet})
