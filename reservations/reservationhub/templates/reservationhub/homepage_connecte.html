@@ -7,15 +7,20 @@ Accueil
 {%block content%}
 <head>
     <meta charset="UTF-8">
-    <a href="{% url 'reservationhub:accueil' %}" class="btn btn-secondary">Se déconnecter</a>
     <title>Accueil </title>
 </head>
 <body>
+    <div style="margin-bottom: 20px;">
+        <!-- Bouton "Se déconnecter" -->
+        <button type="button" class="btn btn-secondary mr-2" onclick="window.location.href='{% url 'reservationhub:accueil' %}'">Se déconnecter</button>
+
+        <!-- Bouton "Panneau d'administration" pour les superutilisateurs -->
+        {% if user.is_superuser %}
+        <button type="button" class="btn btn-warning" onclick="window.location.href='{% url 'reservationhub:recherche_reservations' %}'">Panneau d'administration</button>
+        {% endif %}
+    </div>
 
     <h1 style="text-align: center;">SNCF Connect</h1>
-    {% if user.is_superuser %}
-    <a href="{% url 'reservationhub:recherche_reservations' %}" class="btn btn-warning mt-3">Panneau d'administration</a>
-    {% endif %}
     <h2>Trajets disponibles :</h2>
     <ul>
         {% for trajet in trajets %}
