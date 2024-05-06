@@ -99,10 +99,10 @@
         // Call loadChart function to load initial data
         loadChart(trajetsChart, "{% url 'reservationhub:get_charts_trajet' trajet_id%}");
     </script>
-    <div id="map"></div>
-    
 
-    
+
+    <div id="map"></div>
+    <!-- Include JavaScript library -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
        
@@ -135,5 +135,6 @@
         map.fitBounds(trajectoryPolyline.getBounds());
     </script>
 </body>
+
 {%endblock%}
 </html>
