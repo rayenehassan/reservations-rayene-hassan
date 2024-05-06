@@ -32,6 +32,9 @@
                 {% ifchanged trajet %}
                 <span>
                 <li class="list-group-item">
+                    <script>
+                        loadChart(trajetsChart, "{% url 'reservationhub:get_charts_gare' gare_name%}");
+                    </script>
                     <a href="{% url 'reservationhub:details_trajet' reservation.trajet.id %}">{{ reservation.trajet }} - Départ le {{ reservation.trajet.date_heure_depart|date:"d/m/Y" }} à {{ reservation.trajet.date_heure_depart|date:"H:i" }} - Arrivée à {{ reservation.trajet.date_heure_arrivee|date:"H:i" }}</a>
                 {% endifchanged %}
             </li>
@@ -67,7 +70,7 @@
 
     <!-- Chart.js and custom script -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
-    <!-- <script>
+    <script>
         // Function to load chart data via AJAX
         function loadChart(chart, endpoint) {
             $.ajax({
@@ -109,9 +112,7 @@
             }
         });
 
-        // Call loadChart function to load initial data
-        loadChart(trajetsChart, "{% url 'reservationhub:get_charts_gare' gare.nom%}");
-    </script> -->
+    </script>
 </body>
 
 </html>
