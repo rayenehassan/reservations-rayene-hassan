@@ -26,13 +26,29 @@
         <p>Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }}, arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</p>
 
         <h2>Liste des passagers :</h2>
-        <ul>
+        <button id="togglePassengers" class="btn btn-primary">Afficher/Cacher les passagers</button>
+        <ul id="passengersList" style="display: none;">
             {% for passager in passagers %}
             <li>{{ passager.nom }} {{ passager.prenom }}</li>
             {% empty %}
             <li>Aucun passager pour ce trajet.</li>
             {% endfor %}
         </ul>
+
+        <script>
+            const toggleButton = document.getElementById("togglePassengers");
+            const passengersList = document.getElementById("passengersList");
+
+            toggleButton.addEventListener("click", () => {
+            if (passengersList.style.display === "none") {
+                passengersList.style.display = "block";
+                toggleButton.textContent = "Cacher les passagers";
+            } else {
+                passengersList.style.display = "none";
+                toggleButton.textContent = "Afficher les passagers";
+            }
+            });
+        </script>
 
         <!-- Encadré affichant le nombre de passagers -->
         <div class="card mt-4">

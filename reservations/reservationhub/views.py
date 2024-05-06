@@ -154,10 +154,11 @@ def get_charts_gare(request,gare_id):
 
     # Récupérer les dates et les nombres de réservations
     dates = [entry['date'] for entry in reservations_par_date]
+    dates = sorted(dates)
     nombre_reservations = [entry['total'] for entry in reservations_par_date]
 
     # Formater les dates au format JavaScript Date (milliseconds since Unix epoch)
-    dates_formattees = [int(datetime.combine(date, datetime.min.time()).timestamp()) * 1000 for date in dates]
+    dates_formattees = [int(datetime.combine(date, datetime.min.time()).timestamp()) * 1000 for date in dates].order_by('date')
         
     return JsonResponse({
         "title": f"Fréquentation gare {gare.nom}",
@@ -177,6 +178,7 @@ def get_charts_trajet(request, numero_trajet):
         reservations = Reservation.objects.filter(trajet=trajet)
         
         dates = list(reservations.values_list('date_reservation', flat=True).distinct())
+        dates = sorted(dates)
         nombre_reservations = [reservations.filter(date_reservation=date).count() for date in dates]
          
         return JsonResponse({
