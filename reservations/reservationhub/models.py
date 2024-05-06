@@ -45,6 +45,7 @@ class Reservation(models.Model):
     utilisateur_reservation = models.ForeignKey(Client, on_delete=models.CASCADE)
     def __str__(self):
         return f"Réservation {self.numero_reservation} - {self.passager}"
+    
 
 
     

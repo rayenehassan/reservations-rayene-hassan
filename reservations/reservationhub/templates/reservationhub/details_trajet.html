@@ -132,21 +132,22 @@
         
         var station1 = [{{ depart.latitude }}, {{ depart.longitude }}];
         var station2 = [{{ arrivee.latitude }}, {{ arrivee.longitude }}];
-
+        var station3= [44.821996712, -0.55333112];
         // Déplacer les coordonnées sur la carte
         var trajectoryCoords = [
             station1,
             station2,
+            station3
         
         ];
 
-        
+{% comment %}         
         var station1Marker = L.marker(station1,{alt: 'Gare {{depart.nom}}'}).addTo(map).bindPopup('Gare {{depart.nom}}');
-        var station2Marker = L.marker(station2,{alt: 'Gare {{arrivee.nom}}'}).addTo(map).bindPopup('Gare {{arrivee.nom}}');
+        var station2Marker = L.marker(station2,{alt: 'Gare {{arrivee.nom}}'}).addTo(map).bindPopup('Gare {{arrivee.nom}}'); {% endcomment %}
 
 
         // Créer l'itinéraire
-        var trajectoryPolyline = L.polyline(trajectoryCoords, {color: 'red'}).addTo(map);
+        var trajectoryPolyline = L.polyline(trajectoryCoords, {color: 'green'}).addTo(map);
 
         map.fitBounds(trajectoryPolyline.getBounds());
     </script>
