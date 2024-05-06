@@ -11,7 +11,6 @@ Accueil
 </head>
 <body>
     <div style="margin-bottom: 20px;">
-        <!-- Bouton "Panneau d'administration" pour les superutilisateurs -->
         {% if user.is_superuser %}
         <button type="button" class="btn btn-warning" onclick="window.location.href='{% url 'reservationhub:recherche_reservations' %}'">Panneau d'administration</button>
         {% endif %}
