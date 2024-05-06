@@ -15,12 +15,6 @@ Liste des trajets
 <body>
     <!-- Boutons dans le head -->
     <div style="margin-bottom: 20px;">
-        <!-- Bouton "Se déconnecter" -->
-        <button type="button" class="btn btn-secondary mr-2" onclick="window.location.href='{% url 'reservationhub:accueil' %}'">Se déconnecter</button>
-        
-        <!-- Bouton "Mes réservations" -->
-        <button type="button" class="btn btn-info mr-2" onclick="window.location.href='{% url 'reservationhub:mes_reservations' %}'">Mes réservations</button>
-        
         <!-- Bouton "Panneau d'administration" pour les superutilisateurs -->
         {% if user.is_superuser %}
         <button type="button" class="btn btn-warning" onclick="window.location.href='{% url 'reservationhub:recherche_reservations' %}'">Panneau d'administration</button>
