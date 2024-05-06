@@ -141,8 +141,7 @@ def homepage_connecte(request):
     else:
         return render(request, 'reservationhub/homepage_connecte.html', {})
 
-@login_required
-def get_charts_trajet(request,numero_trajet):
+def get_charts_trajet(numero_trajet):
         trajet = Trajet.objects.get(id=numero_trajet)
         reservations = Reservation.objects.filter(trajet=trajet)
         
@@ -161,8 +160,6 @@ def get_charts_trajet(request,numero_trajet):
                 }]
             },
         })
-    # else:
-        # return render(request, 'reservationhub/admin_dashboard.html', {})
 
 def trajets_chart_view(request, numero_trajet):
     return render(request, "reservationhub/admin_trajet_data.html", {'numero_trajet': numero_trajet})
