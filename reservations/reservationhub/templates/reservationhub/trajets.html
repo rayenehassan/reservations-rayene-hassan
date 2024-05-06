@@ -1,25 +1,37 @@
 <!DOCTYPE html>
-{%extends 'reservationhub/base.html'%}
+{% extends 'reservationhub/base.html'%}
 <html lang="fr">
-{%block title %}
+{% block title %}
 Liste des trajets
-{%endblock%}
-{%block content%}
+{% endblock %}
+{% block content %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des trajets</title>
-
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
+<body>
     <a href="{% url 'reservationhub:accueil' %}" style="position: absolute; top: 10px; right: 10px;">Se déconnecter</a>
     <h1>Liste des trajets disponibles</h1>
-    <ul>
+
+    <!-- Bootstrap List Group -->
+    <ul class="list-group">
         {% for trajet in trajets %}
-            <li>
-                <a href="{% url 'reservationhub:details_trajet_user' trajet.id %}">{{ trajet }} - Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }} - Arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</a>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <span>{{ trajet }}</span><br>
+                    <span>Départ le {{ trajet.date_heure_depart|date:"d/m/Y" }} à {{ trajet.date_heure_depart|date:"H:i" }}</span><br>
+                    <span>Arrivée à {{ trajet.date_heure_arrivee|date:"H:i" }}</span>
+                </div>
+                <div>
+                    <a href="{% url 'reservationhub:details_trajet_user' trajet.id %}" class="btn btn-primary">Détails</a>
+                    <a href="{% url 'reservationhub:edit_reservation' trajet.id %}" class="btn btn-success">Réserver</a>
+                </div>
             </li>
         {% empty %}
-            <li>Aucun trajet disponible.</li>
+            <li class="list-group-item">Aucun trajet disponible.</li>
         {% endfor %}
     </ul>
 
@@ -41,13 +53,14 @@ Liste des trajets
             {% endfor %}
         </select>
 
-        <button type="submit">Filtrer</button>
+        <button type="submit" class="btn btn-primary">Filtrer</button>
     </form>
     
-    <a href="{% url 'reservationhub:mes_reservations' %}" class="reservations-button" style="margin-top: 20px; display: inline-block;">Mes réservations</a>
-    <br><br>
-    <a href="{% url 'reservationhub:accueil_connecte' %}" class="reservations-button" style="margin-top: 20px; display: inline-block;">Revenir à la page d'accueil</a>
+    <a href="{% url 'reservationhub:mes_reservations' %}" class="btn btn-secondary mt-3">Mes réservations</a>
+    <a href="{% url 'reservationhub:accueil_connecte' %}" class="btn btn-secondary mt-3">Revenir à la page d'accueil</a>
 
-{%endblock%}
+    <!-- Include Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+{% endblock %}
 </html>
-

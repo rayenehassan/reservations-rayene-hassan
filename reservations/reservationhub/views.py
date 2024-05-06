@@ -213,14 +213,24 @@ def recherche_reservations(request):
             gare_arrivee = Gare.objects.filter(nom=gare_name).first()
             if gare_arrivee:
                 reservations_arrivee = Reservation.objects.filter(trajet__gare_arrivee=gare_arrivee)
-
-        context = {
-            'gares_disponibles': gares_disponibles,
-            'gare_name': gare_name,
-            'selected_gare': gare_depart,
-            'reservations_depart': reservations_depart,
-            'reservations_arrivee': reservations_arrivee,
-        }
+        if gare_name:
+            context = {
+                'gares_disponibles': gares_disponibles,
+                'gare_name': gare_name,
+                'selected': True,
+                'selected_gare': gare_depart,
+                'reservations_depart': reservations_depart,
+                'reservations_arrivee': reservations_arrivee,
+            }
+        else:
+            context = {
+                'gares_disponibles': gares_disponibles,
+                'gare_name': gare_name,
+                'selected' : False,
+                'reservations_depart': reservations_depart,
+                'reservations_arrivee': reservations_arrivee,
+            }
+            
         return render(request, 'reservationhub/recherche_reservations.html', context)
     else:
         return render(request, 'registration/login.html', {})

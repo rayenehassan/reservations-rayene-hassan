@@ -105,22 +105,24 @@
     
     
     </div>
-    <script>
-        // Initialize chart
-        let gareCtx = document.getElementById("gareChart").getContext("2d");
-        let gareChart = new Chart(gareCtx, {
-            type: 'line',
-            options: {
-                responsive: false,
-                title: {
-                    display: false,
-                    text: ""
+    {% if selected%}
+        <script>
+            // Initialize chart
+            let gareCtx = document.getElementById("gareChart").getContext("2d");
+            let gareChart = new Chart(gareCtx, {
+                type: 'line',
+                options: {
+                    responsive: false,
+                    title: {
+                        display: false,
+                        text: ""
+                    }
                 }
-            }
-        });
+            });
 
-        loadChart(gareChart, "{% url 'reservationhub:get_charts_gare' selected_gare.id%}");
-    </script>
+            loadChart(gareChart, "{% url 'reservationhub:get_charts_gare' selected_gare.id%}");
+        </script>
+    {%endif%}
 </body>
 
 </html>
