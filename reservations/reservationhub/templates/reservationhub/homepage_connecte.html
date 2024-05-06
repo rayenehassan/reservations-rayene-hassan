@@ -7,10 +7,10 @@ Accueil
 {%block content%}
 <head>
     <meta charset="UTF-8">
+    <a href="{% url 'reservationhub:accueil' %}" class="btn btn-secondary">Se déconnecter</a>
     <title>Accueil </title>
 </head>
 <body>
-    <a href="{% url 'reservationhub:accueil' %}" style="position: absolute; top: 10px; right: 10px;">Se déconnecter</a>
 
     <h1 style="text-align: center;">SNCF Connect</h1>
     {% if user.is_superuser %}
