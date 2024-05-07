@@ -11,9 +11,9 @@ from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from reservationhub.models import Gare, Trajet, Passager, Client, Reservation
 
-num_reservations = 600
+num_reservations = 0
 num_passengers = 0
-num_clients = 0
+num_clients = 20
 
 reservations = []
 gares = Gare.objects.all()

@@ -7,4 +7,4 @@ from reservationhub.models import Gare, Trajet, Passager, Client, Reservation
 
 Reservation.objects.all().delete()
 Passager.objects.all().delete()
-Client.objects.all().delete()
+# Client.objects.all().delete()
