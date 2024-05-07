@@ -156,11 +156,14 @@ def trajets(request):
 
     return render(request, 'reservationhub/trajets.html', {'trajets': trajets_disponibles, 'gares': gares_disponibles})
 
-import random
-import string
 
+import random, string
 def generate_random_color():
+    """
+    Cette fonction permet de générer une couleur aléatoire en héxadécimal.
+    """
     return '#' + ''.join(random.choices(string.hexdigits[:-6], k=6))
+
 
 def trajets(request):
     """
