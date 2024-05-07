@@ -132,13 +132,11 @@
         
         var station1 = [{{ depart.latitude }}, {{ depart.longitude }}];
         var station2 = [{{ arrivee.latitude }}, {{ arrivee.longitude }}];
-        var station3= [44.821996712, -0.55333112];
+        
         // Déplacer les coordonnées sur la carte
         var trajectoryCoords = [
             station1,
-            station2,
-            station3
-        
+            station2        
         ];
 
 {% comment %}         
